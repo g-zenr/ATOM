@@ -1,0 +1,37 @@
+{
+  "name": "atom",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "node init && npm run dev -w @atom/web",
+    "build": "node init && npm run build -w @atom/web",
+    "start": "node init && npm run start -w @atom/web",
+    "lint": "npm run lint -w @atom/web",
+    "typecheck": "npm run typecheck -w @atom/web",
+    "test": "npm run test -w @atom/shared",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:generate": "npm run db:generate -w @atom/db",
+    "db:push": "npm run db:push -w @atom/db",
+    "db:migrate": "npm run db:migrate -w @atom/db",
+    "db:seed": "npm run db:seed -w @atom/db",
+    "bot": "npm run bot -w @atom/discord"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@neon/config": "^1.8.6",
+    "@neon/env": "^1.5.3",
+    "dotenv": "^8.2.0",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.10",
+    "prettier-plugin-tailwindcss": "^0.8.1"
+  }
+}

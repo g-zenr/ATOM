@@ -1,0 +1,82 @@
+// ATOM database schema — Notes, Tasks, Time tracking (single-user MVP).
+// Neon branch config lives in ./neon.ts at the repo root.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // Pooled connection (PgBouncer) — app runtime traffic. Managed by the Neon CLI.
+  url = env("DATABASE_URL")
+  // Direct, unpooled connection — migrations only. Managed by the Neon CLI.
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+model User {
+  id          String      @id @default(cuid())
+  authUserId  String?     @unique // Neon Auth identity (neon_auth.users)
+  email       String      @unique
+  name        String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  notes       Note[]
+  tasks       Task[]
+  timeEntries TimeEntry[]
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  title     String
+  content   String   @db.Text
+  tags      String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, updatedAt])
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model Task {
+  id          String     @id @default(cuid())
+  title       String
+  description String?    @db.Text
+  status      TaskStatus @default(TODO)
+  priority    Priority   @default(MEDIUM)
+  dueDate     DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([userId, updatedAt])
+}
+
+model TimeEntry {
+  id        String    @id @default(cuid())
+  start     DateTime
+  end       DateTime?
+  duration  Int? // seconds, computed on clock-out
+  date      DateTime  @db.Date
+  note      String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+}

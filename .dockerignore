@@ -1,0 +1,17 @@
+node_modules
+.next
+out
+build
+dist
+.env
+.env.*
+!.env.example
+.env.pre-neon-backup
+.neon
+.opencode
+.claude
+.git
+*.md
+!README.md
+Dockerfile
+.dockerignore
